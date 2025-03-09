@@ -2,8 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import ChatMessage, { MessageType } from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { Eye, EyeOff, Download } from "lucide-react";
 import { analyzeDocument, AnalysisResponse } from "../services/api";
 import { useToast } from "./ui/toast-context";
+import { downloadJson } from "../lib/utils";
 
 interface Message {
   id: string;
@@ -27,6 +30,7 @@ const ChatContainer: React.FC = () => {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showRawResponses, setShowRawResponses] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -69,14 +73,42 @@ const ChatContainer: React.FC = () => {
     try {
       const response = await analyzeDocument({ message });
       
+      // Log the raw response to console for debugging
+      console.log("Lambda Response (Message):", response);
+      
       // Remove loading message and add response
       setMessages((prev) => 
-        prev.filter((msg) => msg.id !== loadingMessageId).concat({
-          id: generateId(),
-          type: "system",
-          content: formatResponse(response),
-          timestamp: new Date(),
-        })
+        prev.filter((msg) => msg.id !== loadingMessageId).concat([
+          {
+            id: generateId(),
+            type: "system",
+            content: formatResponse(response),
+            timestamp: new Date(),
+          },
+          {
+            id: generateId(),
+            type: "system",
+            content: (
+              <div className={`mt-4 p-3 bg-muted/30 rounded-md overflow-auto ${!showRawResponses ? 'hidden' : ''}`}>
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-sm font-semibold">Raw Lambda Response:</h3>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => downloadJson(response, `lambda-response-${Date.now()}.json`)}
+                    title="Download response as JSON"
+                  >
+                    <Download size={14} />
+                  </Button>
+                </div>
+                <pre className="text-xs whitespace-pre-wrap">
+                  {JSON.stringify(response, null, 2)}
+                </pre>
+              </div>
+            ),
+            timestamp: new Date(),
+          }
+        ])
       );
     } catch (error) {
       console.error("Error sending message:", error);
@@ -131,14 +163,42 @@ const ChatContainer: React.FC = () => {
     try {
       const response = await analyzeDocument({ file });
       
+      // Log the raw response to console for debugging
+      console.log("Lambda Response (File):", response);
+      
       // Remove loading message and add response
       setMessages((prev) => 
-        prev.filter((msg) => msg.id !== loadingMessageId).concat({
-          id: generateId(),
-          type: "system",
-          content: formatResponse(response),
-          timestamp: new Date(),
-        })
+        prev.filter((msg) => msg.id !== loadingMessageId).concat([
+          {
+            id: generateId(),
+            type: "system",
+            content: formatResponse(response),
+            timestamp: new Date(),
+          },
+          {
+            id: generateId(),
+            type: "system",
+            content: (
+              <div className={`mt-4 p-3 bg-muted/30 rounded-md overflow-auto ${!showRawResponses ? 'hidden' : ''}`}>
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-sm font-semibold">Raw Lambda Response:</h3>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => downloadJson(response, `lambda-response-${Date.now()}.json`)}
+                    title="Download response as JSON"
+                  >
+                    <Download size={14} />
+                  </Button>
+                </div>
+                <pre className="text-xs whitespace-pre-wrap">
+                  {JSON.stringify(response, null, 2)}
+                </pre>
+              </div>
+            ),
+            timestamp: new Date(),
+          }
+        ])
       );
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -217,6 +277,18 @@ const ChatContainer: React.FC = () => {
 
   return (
     <Card className="flex h-[calc(100vh-2rem)] flex-col overflow-hidden">
+      <div className="flex items-center justify-between p-2 border-b">
+        <h2 className="text-sm font-medium">Chat History</h2>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowRawResponses(!showRawResponses)}
+          title={showRawResponses ? "Hide raw responses" : "Show raw responses"}
+        >
+          {showRawResponses ? <EyeOff size={16} /> : <Eye size={16} />}
+          <span className="ml-2 text-xs">{showRawResponses ? "Hide Raw" : "Show Raw"}</span>
+        </Button>
+      </div>
       <div className="flex-1 overflow-y-auto">
         {messages.map((message) => (
           <ChatMessage
