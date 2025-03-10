@@ -104,9 +104,21 @@ The build output will be in the `dist` directory.
 
 ### Amazon S3
 
+The application is fully compatible with Amazon S3 static website hosting. It uses HashRouter for client-side routing, which works well with S3's static hosting capabilities.
+
 See [s3-deployment-guide.md](./s3-deployment-guide.md) for detailed instructions on deploying to Amazon S3.
 
+If you encounter any issues during deployment, refer to the [S3 troubleshooting guide](./s3-troubleshooting.md) for solutions to common problems.
+
+### AWS CloudFormation
+
+For a more automated deployment process, you can use the included CloudFormation template to provision and configure all necessary AWS resources.
+
+See [cloudformation-deployment-guide.md](./cloudformation-deployment-guide.md) for detailed instructions on deploying with CloudFormation.
+
 ### GitHub Pages
+
+The application can also be deployed to GitHub Pages. The build process automatically detects GitHub Pages deployment and configures the base path accordingly.
 
 See [github-pages-deployment-guide.md](./github-pages-deployment-guide.md) for detailed instructions on deploying to GitHub Pages.
 

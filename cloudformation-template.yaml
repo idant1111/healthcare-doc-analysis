@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template for Healthcare Document Analysis static website hosting on S3'
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Name of the S3 bucket to create (must be globally unique)
+    Default: healthcare-doc-analysis-website
+  
+  Region:
+    Type: String
+    Description: AWS Region for the S3 bucket
+    Default: eu-west-1
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - HEAD
+            AllowedOrigins:
+              - '*'
+            MaxAge: 3000
+    DeletionPolicy: Retain
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref S3Bucket, '/*']]
+
+Outputs:
+  WebsiteURL:
+    Description: URL for the website hosted on S3
+    Value: !Join ['', ['http://', !Ref S3Bucket, '.s3-website-', !Ref Region, '.amazonaws.com']]
+  
+  S3BucketName:
+    Description: Name of the S3 bucket
+    Value: !Ref S3Bucket 

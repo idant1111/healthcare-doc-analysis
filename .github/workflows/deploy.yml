@@ -54,6 +54,7 @@ jobs:
         run: pnpm build
         env:
           VITE_LAMBDA_FUNCTION_URL: ${{ secrets.LAMBDA_FUNCTION_URL }}
+          GITHUB_PAGES: 'true'
       
       - name: Setup Pages
         uses: actions/configure-pages@v4

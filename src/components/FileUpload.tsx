@@ -1,17 +1,30 @@
-import React, { useState, useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { Upload, File, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/toast-context";
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
+  onFileRemove: () => void;
+  selectedFile: File | null;
   isLoading?: boolean;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, isLoading = false }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const FileUpload: React.FC<FileUploadProps> = ({ 
+  onFileSelect, 
+  onFileRemove,
+  selectedFile,
+  isLoading = false 
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // Reset file input when selectedFile changes
+  useEffect(() => {
+    if (!selectedFile && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [selectedFile]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -39,7 +52,6 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, isLoading = false
       return;
     }
 
-    setSelectedFile(file);
     onFileSelect(file);
   };
 
@@ -48,10 +60,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, isLoading = false
   };
 
   const handleRemoveFile = () => {
-    setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    onFileRemove();
   };
 
   return (

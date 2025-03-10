@@ -6,12 +6,16 @@ import FileUpload from "./FileUpload";
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   onFileUpload: (file: File) => void;
+  onFileRemove: () => void;
+  selectedFile: File | null;
   isLoading?: boolean;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   onFileUpload,
+  onFileRemove,
+  selectedFile,
   isLoading = false,
 }) => {
   const [message, setMessage] = useState("");
@@ -44,7 +48,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <div className="border-t bg-background p-4">
       <div className="mx-auto flex max-w-4xl flex-col gap-4">
-        <FileUpload onFileSelect={onFileUpload} isLoading={isLoading} />
+        <FileUpload 
+          onFileSelect={onFileUpload} 
+          onFileRemove={onFileRemove}
+          selectedFile={selectedFile}
+          isLoading={isLoading} 
+        />
         
         <form onSubmit={handleSubmit} className="flex items-end gap-2">
           <div className="relative flex-1">
@@ -53,7 +62,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask a question or type a message..."
+              placeholder={selectedFile 
+                ? `Ask a question about ${selectedFile.name} or type a message...` 
+                : "Ask a question or type a message..."}
               className="min-h-[40px] w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isLoading}
               rows={1}
