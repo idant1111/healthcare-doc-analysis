@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
       <div className="mx-auto flex max-w-4xl flex-col gap-2 md:flex-row md:justify-between">
         <div className="flex items-center gap-2">
           <Phone className="h-4 w-4" />
-          <span>Support: (555) 123-4567</span>
+          <span>Support: Call us at: 05... </span>
         </div>
         <div className="flex items-center gap-2">
           <Mail className="h-4 w-4" />
