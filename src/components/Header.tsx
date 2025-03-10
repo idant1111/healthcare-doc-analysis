@@ -5,7 +5,7 @@ const Header: React.FC = () => {
     <header className="border-b bg-background p-4">
       <div className="mx-auto flex flex-col items-center max-w-4xl">
         <img 
-          src="/MRKZGalil.png" 
+          src="../src/assets/MRKZGalil.png" 
           alt="Medical Center Galil Logo" 
           className="h-16 w-auto mb-3"
         />
