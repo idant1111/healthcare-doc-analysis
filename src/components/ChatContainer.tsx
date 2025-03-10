@@ -235,6 +235,9 @@ const ChatContainer: React.FC = () => {
   };
 
   const handleSendMessage = async (message: string) => {
+    // If there's a file but no message, set a default message
+    const finalMessage = message.trim() || (selectedFile ? `Please analyze this document: ${selectedFile.name}` : message);
+    
     // Add user message to chat
     const userMessageId = generateId();
     const updatedMessages: Message[] = [
@@ -242,7 +245,7 @@ const ChatContainer: React.FC = () => {
       {
         id: userMessageId,
         type: "user",
-        content: message,
+        content: finalMessage,
         timestamp: new Date(),
       },
     ];
@@ -283,7 +286,7 @@ const ChatContainer: React.FC = () => {
     try {
       // Send both the message and file (if any) to the Lambda function
       const response = await analyzeDocument({ 
-        message, 
+        message: finalMessage, 
         file: selectedFile || undefined 
       });
       

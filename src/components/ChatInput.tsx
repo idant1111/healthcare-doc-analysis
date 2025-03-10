@@ -23,7 +23,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim() && !isLoading) {
+    if ((message.trim() || selectedFile) && !isLoading) {
       onSendMessage(message);
       setMessage("");
     }
@@ -55,6 +55,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
           isLoading={isLoading} 
         />
         
+        {selectedFile && (
+          <div className="text-sm text-blue-500 font-medium">
+            Please provide a message or question about the uploaded file.
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit} className="flex items-end gap-2">
           <div className="relative flex-1">
             <textarea
@@ -65,7 +71,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
               placeholder={selectedFile 
                 ? `Ask a question about ${selectedFile.name} or type a message...` 
                 : "Ask a question or type a message..."}
-              className="min-h-[40px] w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className={`min-h-[40px] w-full resize-none rounded-md border ${selectedFile && !message.trim() ? 'border-blue-500' : 'border-input'} bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`}
               disabled={isLoading}
               rows={1}
             />
@@ -73,7 +79,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           <Button 
             type="submit" 
             size="icon" 
-            disabled={!message.trim() || isLoading}
+            disabled={isLoading}
           >
             <Send className="h-4 w-4" />
             <span className="sr-only">Send message</span>

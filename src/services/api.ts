@@ -30,10 +30,13 @@ export interface AnalysisResponse {
 
 export const analyzeDocument = async (request: AnalysisRequest): Promise<AnalysisResponse> => {
   try {
+    // Ensure there's always a message, especially with file uploads
+    const message = request.message || (request.file ? `Please analyze this document: ${request.file.name}` : "No message provided");
+    
     console.log("API Request:", {
       url: LAMBDA_FUNCTION_URL,
       type: request.file ? "file upload" : "text message",
-      message: request.message,
+      message: message,
       file: request.file ? `${request.file.name} (${request.file.size} bytes)` : null
     });
 
@@ -44,10 +47,8 @@ export const analyzeDocument = async (request: AnalysisRequest): Promise<Analysi
       // Add the file to the form data
       formData.append("file", request.file);
       
-      // Add the message if it exists
-      if (request.message) {
-        formData.append("message", request.message);
-      }
+      // Always add a message with file uploads
+      formData.append("message", message);
       
       const response = await axios.post(LAMBDA_FUNCTION_URL, formData, {
         headers: {
@@ -65,7 +66,7 @@ export const analyzeDocument = async (request: AnalysisRequest): Promise<Analysi
       // If there's only a message, send as JSON
       const response = await axios.post(
         LAMBDA_FUNCTION_URL,
-        { message: request.message },
+        { message: message },
         { headers }
       );
       
