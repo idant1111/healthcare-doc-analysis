@@ -61,12 +61,31 @@ const ChatContainer: React.FC = () => {
       setConversationTitle(activeConversation.title);
       
       // Convert stored messages to the format used by the component
-      const convertedMessages = activeConversation.messages.map(msg => ({
-        id: msg.id,
-        type: msg.type as MessageType,
-        content: msg.content,
-        timestamp: msg.timestamp
-      }));
+      const convertedMessages = activeConversation.messages.map(msg => {
+        // Check if content is a stringified JSON object that represents a React node
+        let content: string | React.ReactNode = msg.content;
+        if (typeof content === 'string' && content.startsWith('{"type":')) {
+          try {
+            // For system messages that might contain analysis data, parse and format properly
+            if (msg.type === 'system') {
+              const parsedContent = JSON.parse(content);
+              if (parsedContent && typeof parsedContent === 'object') {
+                content = formatResponse(parsedContent);
+              }
+            }
+          } catch (e) {
+            // If parsing fails, keep the original content
+            console.error('Error parsing message content:', e);
+          }
+        }
+        
+        return {
+          id: msg.id,
+          type: msg.type as MessageType,
+          content: content,
+          timestamp: msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp)
+        };
+      });
       
       setMessages(convertedMessages);
     }
@@ -85,12 +104,31 @@ const ChatContainer: React.FC = () => {
         setConversationTitle(conversation.title);
         
         // Convert stored messages to the format used by the component
-        const convertedMessages = conversation.messages.map(msg => ({
-          id: msg.id,
-          type: msg.type as MessageType,
-          content: msg.content,
-          timestamp: msg.timestamp
-        }));
+        const convertedMessages = conversation.messages.map(msg => {
+          // Check if content is a stringified JSON object that represents a React node
+          let content: string | React.ReactNode = msg.content;
+          if (typeof content === 'string' && content.startsWith('{"type":')) {
+            try {
+              // For system messages that might contain analysis data, parse and format properly
+              if (msg.type === 'system') {
+                const parsedContent = JSON.parse(content);
+                if (parsedContent && typeof parsedContent === 'object') {
+                  content = formatResponse(parsedContent);
+                }
+              }
+            } catch (e) {
+              // If parsing fails, keep the original content
+              console.error('Error parsing message content:', e);
+            }
+          }
+          
+          return {
+            id: msg.id,
+            type: msg.type as MessageType,
+            content: content,
+            timestamp: msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp)
+          };
+        });
         
         setMessages(convertedMessages);
       }
