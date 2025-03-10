@@ -7,6 +7,7 @@ import { Eye, EyeOff, Download, Edit2 } from "lucide-react";
 import { analyzeDocument, AnalysisResponse } from "../services/api";
 import { useToast } from "./ui/toast-context";
 import { downloadJson } from "../lib/utils";
+import ReactConfetti from "react-confetti";
 import { 
   getConversation, 
   createConversation, 
@@ -39,6 +40,7 @@ const ChatContainer: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [conversationTitle, setConversationTitle] = useState<string>("");
   const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
+  const [showConfetti, setShowConfetti] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -164,6 +166,17 @@ const ChatContainer: React.FC = () => {
     setMessages([welcomeMessage]);
     setActiveConversationId(newConversation.id);
     setConversationTitle(newConversation.title);
+    
+    // Show toast notification
+    toast({
+      title: "New Conversation Created",
+      description: `Started ${newConversation.title}`,
+      variant: "blue",
+    });
+    
+    // Show confetti
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 5000); // Hide confetti after 5 seconds
   };
 
   const handleSelectConversation = (id: string) => {
@@ -426,6 +439,15 @@ const ChatContainer: React.FC = () => {
 
   return (
     <div className="flex h-[calc(100vh-8rem)]">
+      {showConfetti && (
+        <ReactConfetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={500}
+        />
+      )}
+      
       {isSidebarOpen && (
         <ConversationSidebar 
           activeConversationId={activeConversationId}
