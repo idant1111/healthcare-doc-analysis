@@ -4,6 +4,7 @@ A modern web application for healthcare professionals to upload and analyze PDF 
 
 ## Features
 
+
 - Chat-like interface for document analysis
 - PDF document upload and processing
 - Secure communication with AWS Lambda function
@@ -140,3 +141,6 @@ See [testing-guide.md](./testing-guide.md) for testing procedures.
 ## License
 
 [MIT](LICENSE)
+
+## Idan Test
+a test text for presentation
